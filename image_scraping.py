@@ -3,7 +3,8 @@ import shutil
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.chrome.options import Options
 import time
 import urllib.request
 
@@ -29,14 +30,18 @@ def image_scrape(name, choice):
         print("Error: %s : %s" % (dir_path, e.strerror))
 
 
-    GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
-    CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--disable-gpu')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.binary_location = GOOGLE_CHROME_PATH
-    driver = webdriver.Chrome(execution_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
-    driver.set_window_position(0,-1000)
+    CHROMEDRIVER_PATH = os.environ.get('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
+    GOOGLE_CHROME_BIN = os.environ.get('GOOGLE_CHROME_BIN', '/usr/bin/google-chrome')
+
+
+    options = Options()
+    options.binary_location = GOOGLE_CHROME_BIN
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.headless = True
+
+    driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH , chrome_options=options)
+#     driver.set_window_position(0,-1000)
 
 
     # images_urls_list
